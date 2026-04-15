@@ -48,6 +48,8 @@ http://localhost:3000/contact-intelligence?url=https://example.com
   "asOf": "2026-01-01T00:00:00.000Z"
 }
 
+---
+
 ## Features
 
 - Extracts emails from:
