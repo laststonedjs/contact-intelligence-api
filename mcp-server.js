@@ -1,7 +1,10 @@
 const { Server } = require("@modelcontextprotocol/sdk/server");
 const { StdioServerTransport } = require("@modelcontextprotocol/sdk/server/stdio");
 
-const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
+// 🔥 PRODUCTION BASE URL
+const BASE_URL =
+  process.env.BASE_URL ||
+  "https://contact-intelligence-api-production.up.railway.app";
 
 const server = new Server(
   {
@@ -18,7 +21,8 @@ const server = new Server(
 server.tool(
   "contact-intelligence",
   {
-    description: "Extracts and ranks business contact information from a website",
+    description:
+      "Extracts and ranks business contact information (emails, LinkedIn) from a website and returns structured, confidence-scored results.",
     inputSchema: {
       type: "object",
       properties: {
@@ -28,12 +32,36 @@ server.tool(
     }
   },
   async ({ url }) => {
-    const res = await fetch(
-      `${BASE_URL}/contact-intelligence?url=${encodeURIComponent(url)}`
-    );
+    try {
+      const res = await fetch(
+        `${BASE_URL}/contact-intelligence?url=${encodeURIComponent(url)}`
+      );
 
-    const data = await res.json();
-    return data;
+      const data = await res.json();
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(data)
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              answer: "Failed to fetch contact intelligence.",
+              confidence: 0,
+              contacts: [],
+              error: error.message
+            })
+          }
+        ]
+      };
+    }
   }
 );
 
