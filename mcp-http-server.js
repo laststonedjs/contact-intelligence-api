@@ -27,9 +27,14 @@ app.post("/mcp", async (req, res) => {
 
     const data = await response.json();
 
-    // MCP-compatible response (basic)
+    // MCP-compatible response
     return res.json({
-      result: data
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(data)
+        }
+      ]
     });
 
   } catch (error) {
